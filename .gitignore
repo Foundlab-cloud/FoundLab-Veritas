@@ -6,6 +6,12 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 
 # Secrets
 *.pem
+
+# Simulation artifacts
+infracore_simulation/veritas_audit_trail.jsonl
+infracore_simulation/audit_report.html
+FoundLab_NVIDIA_Incident_Dossier.pdf

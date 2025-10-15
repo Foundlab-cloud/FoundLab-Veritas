@@ -1,7 +1,4 @@
-google-cloud-bigquery
-google-cloud-storage
-google-cloud-pubsub
-google-cloud-secret-manager
-google-auth
-typer
 cryptography
+google-cloud-secret-manager
+rich
+markdown-pdf

@@ -1,7 +1,13 @@
+import os
 from google.cloud import bigquery
-client = bigquery.Client()
-dataset_id = "foundlab"
-project = "umbrella-producao"
+
+# Get project ID from environment variable
+project = os.environ.get("GOOGLE_CLOUD_PROJECT")
+if not project:
+    raise ValueError("GOOGLE_CLOUD_PROJECT environment variable not set.")
+
+client = bigquery.Client(project=project)
+dataset_id = f"{project}.veritas_audit"
 
 dataset_ref = bigquery.Dataset(f"{project}.{dataset_id}")
 dataset_ref.location = "southamerica-east1"

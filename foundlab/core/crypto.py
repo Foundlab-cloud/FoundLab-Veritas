@@ -15,8 +15,9 @@ def load_private_key(signer_name: str):
     """Loads a private key for a given signer from Google Secret Manager."""
     client = secretmanager.SecretManagerServiceClient()
     
-    # !!! ATENÇÃO: Adapte o 'project_id' para o seu ambiente !!!
-    project_id = os.getenv("GCP_PROJECT_ID", "seu-gcp-project-id-aqui")
+    project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+    if not project_id:
+        raise ValueError("GCP_PROJECT_ID environment variable not set.")
     secret_name = f"veritas_signer_{signer_name}_priv"
     
     name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
