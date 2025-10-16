@@ -30,9 +30,10 @@
 - [3. System Architecture](#3-system-architecture)
 - [4. Live-Fire Case Study: The NVIDIA SSO Incident](#4-live-fire-case-study-the-nvidia-sso-incident)
 - [5. Strategic Implications for NVIDIA](#5-strategic-implications-for-nvidia)
-- [6. Compliance-as-Infrastructure](#6-compliance-as-infrastructure)
-- [7. Technical Due Diligence Dossier](#7-technical-due-diligence-dossier)
-- [8. License & Disclaimer](#8-license--disclaimer)
+- [6. Technical Appendices](#6-technical-appendices)
+- [7. Compliance-as-Infrastructure](#7-compliance-as-infrastructure)
+- [8. Technical Due Diligence Dossier](#8-technical-due-diligence-dossier)
+- [9. License & Disclaimer](#9-license--disclaimer)
 
 ---
 
@@ -103,9 +104,43 @@ graph TD
 
 ---
 
+<details>
+<summary><strong>Operational Excellence (SRE) & Antifragility</strong></summary>
+
+> Our architecture is not merely resilient; it is designed to be **antifragile**, strengthening from stress and operational failures. We adopt Google's Site Reliability Engineering (SRE) principles to treat reliability as a software engineering problem.
+> - **Service Level Objectives (SLOs):** We define clear SLOs for critical metrics like availability (e.g., 99.9%) and latency (e.g., p95 < 520ms).
+> - **Error Budgets:** Our operational model is governed by Error Budgets. This allows teams to balance innovation with stability, consuming the budget for new releases and freezing changes when the budget is depleted.
+> - **Audited Fallback:** As detailed in the Architectural Primitives, failures are not catastrophic events; they are auditable transactions. A primary engine failure triggers a secondary engine, and the entire sequence is immutably logged in the Veritas Protocol, providing a transparent and defensible record of the system's self-healing capabilities.
+
+</details>
+
+<details>
+<summary><strong>The AI Flywheel: Compounding Intelligence</strong></summary>
+
+> The platform is not static; it is a dynamic system that improves with every transaction. This continuous learning cycle, the **IA Flywheel**, is a strategic differentiator that creates a lasting competitive moat.
+> - **Feedback Capture:** The system captures feedback from both automated flags (e.g., `low_confidence_score`) and human reviewers (e.g., `manual_override`, `score_adjustment`).
+> - **Immutable Record:** Every feedback event is treated as a critical transaction and is immutably recorded in the Veritas Protocol, linked to the original `DecisionID`. This ensures that the model calibration process itself is fully auditable.
+> - **Automated Retraining:** Feedback events trigger a serverless **Vertex AI Pipeline** that automatically retrains, evaluates, and versions the relevant AI model. The new model candidate is only promoted if its performance exceeds the current production model, with an audited rollback capability always available. This creates a proprietary data asset of decision-making that makes the platform smarter and more accurate with each use.
+
+</details>
+
+<details>
+<summary><strong>Strategic Enabler: The Operational ROI Framework</strong></summary>
+
+> Technology is only valuable if it generates a quantifiable return. The Veritas platform is designed to produce significant, measurable Operational Alpha by transforming high-cost, high-risk manual processes into low-cost, deterministic, and auditable computational workflows.
+>
+> Our engagement model includes a comprehensive ROI analysis based on the following framework:
+> - **Variables:** `T_manual_hours`, `C_analyst_hr`, `N_cases_month`, `P_error_rate`, `C_error_cost`, `P_fraud_rate`, `C_fraud_cost`, `T_umbrella_min`, `License_USD_month`.
+> - **Formulas:** We calculate `C_total_current_state` vs. `C_total_umbrella_state` to derive key metrics like **ROI**, **Payback Period**, and **Error Reduction Rate**.
+> - **Output:** The result is a clear before-and-after analysis that quantifies the value of moving from a trust-based operational model to a mathematically verifiable one. For a typical use case, we project a >90% reduction in processing time and a significant decrease in costs associated with manual error and compliance remediation.
+
+</details>
+
 ## 4. Live-Fire Case Study: The NVIDIA SSO Incident
 
 This repository includes a self-contained, self-verifying simulation that replicates the October 2025 unauthorized SSO federation attempt. It is not a mock; it is a live execution of the core cryptographic logic and policy engine.
+
+For a complete analysis, please see the full study case: [https://irelia0nerf.github.io/Studycase/](https://irelia0nerf.github.io/Studycase/)
 
 ### Step 1: Execute the Specification
 
@@ -138,7 +173,216 @@ Veritas is not merely a security tool; it is a **market enabler**. By integratin
 
 ---
 
-## 6. Compliance-as-Infrastructure
+## 6. Technical Appendices
+
+<details>
+<summary><strong>Appendix A: Canonical Contracts (JSON Schema)</strong></summary>
+
+### A.1. Veritas Protocol Audit Log Entry
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Veritas Protocol Audit Log Entry",
+  "type": "object",
+  "required": ["decisionId", "eventType", "timestamp", "actor", "chainHash"],
+  "properties": {
+    "decisionId": {"type": "string", "format": "uuid"},
+    "eventType": {"type": "string"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "actor": {"type": "string"},
+    "previousChainHash": {"type": ["string", "null"]},
+    "chainHash": {"type": "string"},
+    "payload": {"type": "object", "additionalProperties": true},
+    "rationale": {"oneOf": [{"type": "string"}, {"type": "object"}, {"type": "null"}]}
+  }
+}
+```
+
+### A.2. Decision Output Example
+```json
+{
+  "decisionId": "uuid",
+  "score": {"value": 0.0, "scale": "0-1"},
+  "explainableRationale": "string",
+  "flags": ["string"],
+  "evidenceUris": ["gs://..."],
+  "veritasProof": {"chainHash": "...", "previous": "..."}
+}
+```
+</details>
+
+<details>
+<summary><strong>Appendix C: Architectural Diagrams (Mermaid)</strong></summary>
+
+### C.1. End-to-End Pipeline
+```mermaid
+flowchart LR
+    A[Ingestion] --> B[Parsing]
+    B --> C[Extraction]
+    C --> D[Validation]
+    D --> E[Scoring]
+    E --> F[Veritas: Evidence Generation]
+    F --> G[Output / Integrations]
+```
+
+### C.2. Audited Fallback Mechanism
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Client
+    participant Ingress
+    participant Orchestrator
+    participant EngineA as Engine A (Gemini)
+    participant EngineB as Engine B (NVIDIA NIM/GKE)
+    participant Veritas
+    Client->>Ingress: Submit Document
+    Ingress->>Orchestrator: EVENT DOCUMENT_RECEIVED (DecisionID)
+    Orchestrator->>EngineA: Dispatch Analysis
+    EngineA-->>Orchestrator: Timeout/Error
+    Orchestrator->>Veritas: EVENT ENGINE_FAILURE
+    Orchestrator->>Veritas: EVENT FALLBACK_TRIGGERED (EngineB)
+    Orchestrator->>EngineB: Re-dispatch
+    EngineB-->>Orchestrator: Result
+    Orchestrator->>Veritas: EVENT ENGINE_SUCCESS
+    Orchestrator->>Client: FINAL_DECISION_GENERATED + Evidence
+```
+
+### C.3. Critic-Loop Flow
+```mermaid
+graph TD
+    subgraph "Generation & Critique Cycle"
+        A[1. Analyst Agent generates output] --> B{2. Critic Agent evaluates}
+        B -- "Correction Feedback" --> A
+    end
+
+    subgraph "Output"
+        B -- "Validation OK" --> C[3. Final Score + Valid Rationale]
+        C --> D[4. Immutable Record]
+    end
+
+    style D fill:#E9D5F4,stroke:#612F73,stroke-width:2px
+```
+
+### C.4. VPC Service Controls Perimeter
+```mermaid
+flowchart LR
+  subgraph Internet
+    U[Clients/Analysts]
+  end
+  U --> LB["HTTPS Load Balancer + Cloud Armor"]
+  LB --> CR1["Cloud Run: Ingress | Parser | Decision | Egress"]
+  CR1 --> PS["Pub/Sub"]
+  subgraph VPC_SC["VPC Service Controls Perimeter"]
+    BQ["BigQuery: veritas_audit_trail"]
+    GCS["GCS: WORM Buckets (non-sensitive artifacts)"]
+    SQL["Cloud SQL (config/non-sensitive)"]
+    MEM["Memorystore"]
+    KMS["KMS / Secret Manager"]
+  end
+  CR1 --> BQ
+  CR1 --> GCS
+  CR1 --> SQL
+  CR1 --> MEM
+  CR1 --> KMS
+```
+
+### C.5. Zero-Persistence Flow
+*Ensures sensitive data is never persisted to disk, minimizing the attack surface.*
+```mermaid
+flowchart TD
+    A[Document Ingested into RAM] --> B{Processing in Volatile Memory}
+    B --> C(Generate SHA-256 Hash)
+    B --> D(Extract Metadata)
+    C -- Hash --> E[(WORM Record)]
+    D -- Metadata --> E
+    B -- After processing --> F(Memory Destruction)
+
+    style F fill:red,color:white
+```
+
+### C.6. AI Flywheel (Continuous Learning)
+*The MLOps engine that ensures our system gets smarter with every interaction.*
+```mermaid
+graph LR
+    A[Feedback] --> B(Pub/Sub)
+    B --> C{Flywheel Service}
+    C --> D(Vertex AI Pipeline)
+    D -- Train & Version --> E[Model Registry]
+    E -- Deploy New Model --> A
+
+    subgraph "Observability"
+        E --> F[/Performance Dashboards/]
+    end
+```
+
+</details>
+
+<details>
+<summary><strong>Appendix D: Veritas Chain Verification</strong></summary>
+
+### D.1. Full Trail Query by DecisionID
+```sql
+-- BigQuery Standard SQL
+SELECT * FROM `foundlab-core-460315.veritas.veritas_audit_trail`
+WHERE decisionId = "UUID_TO_QUERY" ORDER BY timestamp;
+```
+
+### D.2. Local Chain Verification Script
+This script provides client-side verification of an exported audit trail, proving its integrity.
+```python
+#!/usr/bin/env python3
+import sys, json, hashlib
+
+def verify_chain(path):
+    prev_hash = None
+    count = 0
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            rec = json.loads(line)
+            
+            # Verify chain link
+            if prev_hash is None:
+                assert rec["previousChainHash"] is None, "Genesis event has a previous hash"
+            else:
+                assert rec["previousChainHash"] == prev_hash, "Hash chain broken"
+
+            # Recompute hash to verify integrity
+            event_data = {
+                "decisionId": rec["decisionId"], "timestamp": rec["timestamp"],
+                "eventType": rec["eventType"], "payloadHash": rec["payloadHash"],
+                "previousChainHash": rec["previousChainHash"],
+            }
+            event_string = json.dumps(event_data, sort_keys=True, separators=(',', ':'))
+            recomputed_hash = hashlib.sha256(event_string.encode('utf-8')).hexdigest()
+            assert rec["chainHash"] == recomputed_hash, "Record tampered"
+
+            prev_hash = rec["chainHash"]
+            count += 1
+    print(f"OK • {count} events • Chain integrity verified • DecisionID={rec['decisionId']}")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: verify_veritas_chain.py <logs.jsonl>")
+        sys.exit(2)
+    verify_chain(sys.argv[1])
+```
+</details>
+
+<details>
+<summary><strong>Appendix H: Veritas-as-a-Service (VaaS) API Contract</strong></summary>
+
+**Endpoints**
+- `POST /veritas/emit` → `{{ decisionId, issuedAt }}` (Requires `Idempotency-Key`)  
+- `POST /veritas/log-event` → `{{ chainHash }}`  
+- `GET /veritas/verify/{decisionId}` → `{{ chain_ok, events[] }}`  
+- `GET /veritas/export/{decisionId}` → `{{ audit_json }}`  
+
+**Security**: OAuth2 (Workload Identity Federation) or HMAC (KMS). Rate: 100 RPS/SA. Retention: Metadata only.
+</details>
+
+---
+
+## 7. Compliance-as-Infrastructure
 
 Our architecture is a direct implementation of "Compliance-by-Design." We transform regulatory requirements into testable, auditable, and deterministic technical controls.
 
@@ -151,7 +395,7 @@ Our architecture is a direct implementation of "Compliance-by-Design." We transf
 
 ---
 
-## 7. Technical Due Diligence Dossier
+## 8. Technical Due Diligence Dossier
 
 For a comprehensive understanding of the incident and our institutional architecture, we have compiled a full dossier.
 
@@ -162,7 +406,7 @@ For a comprehensive understanding of the incident and our institutional architec
 
 ---
 
-## 8. License & Disclaimer
+## 9. License & Disclaimer
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
