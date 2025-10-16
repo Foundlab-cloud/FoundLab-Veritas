@@ -215,6 +215,7 @@ Veritas is not merely a security tool; it is a **market enabler**. By integratin
 <summary><strong>Appendix C: Architectural Diagrams (Mermaid)</strong></summary>
 
 ### C.1. End-to-End Pipeline
+
 ```mermaid
 flowchart LR
     A[Ingestion] --> B[Parsing]
@@ -226,6 +227,7 @@ flowchart LR
 ```
 
 ### C.2. Audited Fallback Mechanism
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -248,6 +250,7 @@ sequenceDiagram
 ```
 
 ### C.3. Critic-Loop Flow
+
 ```mermaid
 graph TD
     subgraph "Generation & Critique Cycle"
@@ -264,6 +267,7 @@ graph TD
 ```
 
 ### C.4. VPC Service Controls Perimeter
+
 ```mermaid
 flowchart LR
   subgraph Internet
@@ -287,7 +291,9 @@ flowchart LR
 ```
 
 ### C.5. Zero-Persistence Flow
+
 *Ensures sensitive data is never persisted to disk, minimizing the attack surface.*
+
 ```mermaid
 flowchart TD
     A[Document Ingested into RAM] --> B{Processing in Volatile Memory}
@@ -301,7 +307,9 @@ flowchart TD
 ```
 
 ### C.6. AI Flywheel (Continuous Learning)
+
 *The MLOps engine that ensures our system gets smarter with every interaction.*
+
 ```mermaid
 graph LR
     A[Feedback] --> B(Pub/Sub)

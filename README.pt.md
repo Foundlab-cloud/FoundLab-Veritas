@@ -262,6 +262,7 @@ Content-Type: application/json
 <summary><strong>Apêndice C: Diagramas Arquitetônicos (Mermaid)</strong></summary>
 
 ### C.1. Pipeline de Ponta a Ponta
+
 ```mermaid
 flowchart LR
     A[Ingestão] --> B[Parsing]
@@ -273,6 +274,7 @@ flowchart LR
 ```
 
 ### C.2. Mecanismo de Fallback Auditado
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -295,6 +297,7 @@ sequenceDiagram
 ```
 
 ### C.3. Fluxo do Critic-Loop
+
 ```mermaid
 graph TD
     subgraph "Ciclo de Geração e Crítica"
@@ -311,6 +314,7 @@ graph TD
 ```
 
 ### C.4. Perímetro de Serviço VPC
+
 ```mermaid
 flowchart LR
   subgraph Internet
@@ -334,7 +338,9 @@ flowchart LR
 ```
 
 ### C.5. Fluxo Zero-Persistence
+
 *Garante que dados sensíveis nunca sejam persistidos em disco, minimizando a superfície de ataque.*
+
 ```mermaid
 flowchart TD
     A[Documento Ingerido em RAM] --> B{Processamento em Memória Volátil}
@@ -348,7 +354,9 @@ flowchart TD
 ```
 
 ### C.6. IA Flywheel (Aprendizagem Contínua)
+
 *O motor de MLOps que garante que nosso sistema se torne mais inteligente a cada interação.*
+
 ```mermaid
 graph LR
     A[Feedback] --> B(Pub/Sub)
